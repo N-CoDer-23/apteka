@@ -1,7 +1,9 @@
 const User = require('../model/UserSchema');
 const Login = require('../model/LoginSchema');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+// const bcrypt = require('bcrypt');
+// const jwt = require('jsonwebtoken');
+
+
 
 const getUser = async (req, res) => {
     try {
@@ -22,39 +24,44 @@ const getUser = async (req, res) => {
 };
 
 // -------Login - Sign in-------------
+const generateSimpleToken = (username) => {
+    // Oddiy token yaratish (masalan, username va vaqtni birlashtirib)
+    return `${username}-${Date.now()}`;
+};
+
 const login = async (req, res) => {
     try {
         const { username, password } = req.body;
-        const user = await Login.findOne({ username, password });
 
+        // Foydalanuvchini username va parol bo'yicha qidiring
+        const user = await Login.find({ username, password });
+
+        console.log(user);
         if (!user) {
             return res.status(401).send({
                 success: false,
-                message: "Username or Password invalid!"
+                message: "Username yoki Parol noto'g'ri!"
             });
         }
 
-        if (await bcrypt.compare(password, user.password)) {
-            const token = jwt.sign({ username: user.username }, "Secret");
-            return res.status(200).send({
-                success: true,
-                message: `Welcome back ${username}`,
-                token: token
-            });
-        } else {
-            res.status(401).send({
-                success: false,
-                message: "Username or Password invalid!"
-            });
-        }
+        // Oddiy token yaratish
+        const token = generateSimpleToken(user.username);
+
+        return res.status(200).send({
+            success: true,
+            message: `Qaytib kelganingizdan xursandmiz, ${username}`,
+            token: token
+        });
+
     } catch (error) {
         console.error(error);
         res.status(500).send({
             success: false,
-            message: "Server error"
+            message: "Server xatosi"
         });
     }
 };
+
 
 // -----Register - Sign Up-------
 const createUser = async (req, res) => {
@@ -73,16 +80,16 @@ const createUser = async (req, res) => {
             type,
             worktime
         } = req.body;
-        const existingUser = await User.findOne({ username });
+        const existingUser = await User.findOne({ username, password });
         if (existingUser) {
             res.json("Username already exists!");
         } else {
-            let hashedPassword = await bcrypt.hash(password, 10);
+            // let hashedPassword = await bcrypt.hash(password, 10);
             const newUser = new User({
                 fname,
                 lname,
                 username,
-                password: hashedPassword,
+                password,
                 gender,
                 address,
                 salary,
