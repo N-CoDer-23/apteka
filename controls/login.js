@@ -1,7 +1,4 @@
-
-// controls/login.js
 const User = require('../model/UserSchema');
-const Login = require('../model/LoginSchema');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -30,7 +27,7 @@ const generateSimpleToken = (username) => {
 const login = async (req, res) => {
     try {
         const { username, password } = req.body;
-        const user = await Login.findOne({ username });
+        const user = await User.findOne({ username });
 
         if (!user) {
             return res.status(401).send({

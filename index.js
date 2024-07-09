@@ -1,5 +1,3 @@
-
-// server.js
 const express = require("express");
 const { connect } = require("mongoose");
 const cors = require("cors");
@@ -12,7 +10,7 @@ app.use(cors());
 async function connectToDB() {
     await connect(process.env.MONGO_URI)
         .then(() => console.log("MongoDb is connected"))
-        .catch((err) => console.log("MongoDB in not connected", err));
+        .catch((err) => console.log("MongoDB is not connected", err));
 }
 connectToDB();
 

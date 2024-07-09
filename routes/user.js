@@ -1,4 +1,3 @@
-// routes/user.js
 const { Router } = require('express');
 const { getUser, login, createUser, updateUser, deleteUser } = require('../controls/login');
 
