@@ -1,19 +1,13 @@
-const {Router} = require('express')
+// routes/user.js
+const { Router } = require('express');
+const { getUser, login, createUser, updateUser, deleteUser } = require('../controls/login');
 
-const users = Router();
+const usersRouter = Router();
 
-const{getUser, login, createUser,deleteUser,updateUser} = require('../controls/login')
+usersRouter.get('/getUser', getUser);
+usersRouter.post('/postLogin', login);
+usersRouter.post('/createUser', createUser);
+usersRouter.put('/updateUser/:id', updateUser);
+usersRouter.delete('/deleteUser/:id', deleteUser);
 
-// ishchilarni royxatini korish
-users.get('/getUser', getUser);
-// Royxatdan otish va tekshirish
-users.post('/postLogin', login);
-// Yangi ishchi qoshish
-users.post('/createUser', createUser);
-// Ishchilarni id si boyicha ochirish
-users.delete('/deleteUser/:_id', deleteUser);
-// Ishchilarni id si boyicha yangilash
-users.put('/updateUser/:_id', updateUser);
-
-
-module.exports = {users};
+module.exports = usersRouter;

@@ -1,10 +1,11 @@
+// models/UserSchema.js
 const { Schema, model } = require('mongoose');
 
 const userSchema = new Schema({
     fname: { type: String, required: true },
     lname: { type: String, required: true },
     birthday: { type: String, required: true },
-    username: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     gender: { type: String },
     phonenumber: { type: Number, required: true },
@@ -15,5 +16,5 @@ const userSchema = new Schema({
     worktime: { type: String, required: true }
 });
 
-const User = model('user', userSchema);
+const User = model('User', userSchema);
 module.exports = User;

@@ -1,35 +1,32 @@
+
+// server.js
 const express = require("express");
-const {connect} = require("mongoose");
+const { connect } = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
-app.use(cors())
-
-async function connectToDB(){
+async function connectToDB() {
     await connect(process.env.MONGO_URI)
-    .then(()=> console.log("MongoDb is connected"))
-    .catch(()=> console.log("MongoDB in not connected"))
- }
- connectToDB()
+        .then(() => console.log("MongoDb is connected"))
+        .catch((err) => console.log("MongoDB in not connected", err));
+}
+connectToDB();
 
- app.get('/', (req, res)=>{
-    res.json("Hi NodeJs!")
- })
+app.get('/', (req, res) => {
+    res.json("Hi NodeJs!");
+});
 
- // ----Routers--------
-const {users} = require('./routes/user')
-const pharm = require('./routes/pharm')
+const usersRouter = require('./routes/user');
+const pharmRouter = require('./routes/pharm');
 
-app.use('/users', users);
-app.use('/pharm', pharm);
+app.use('/users', usersRouter);
+app.use('/pharm', pharmRouter);
 
-
-
-// ------PORT---------
-const PORT = process.env.PORT || 7000
-app.listen(PORT, ()=>{
-   console.log(`Server http://localhost:${PORT} portda ishga tushdi`);
-})
+const PORT = process.env.PORT || 7000;
+app.listen(PORT, () => {
+    console.log(`Server http://localhost:${PORT} portda ishga tushdi`);
+});

@@ -1,6 +1,4 @@
 const { Router } = require('express');
-
-const pharm = Router();
 const {
     getPharm,
     createPharm,
@@ -8,17 +6,19 @@ const {
     deletePharm,
     searchPharm,
     upload
-} = require('../controls/pharm')
+} = require('../controls/pharm');
+
+const pharmRouter = Router();
 
 // Ma'lumotlarni ko'rish
-pharm.get('/getPharm', getPharm);
+pharmRouter.get('/getPharm', getPharm);
 // Yangi dori qo'shish
-pharm.post('/createPharm', upload.single("image"), createPharm);
+pharmRouter.post('/createPharm', upload.single("image"), createPharm);
 // Dorilarni ID'siga qarab yangilash
-pharm.put('/updatePharm/:id', updatePharm);
+pharmRouter.put('/updatePharm/:id', updatePharm);
 // Dorilarni ID'siga qarab o'chirish
-pharm.delete('/deletePharm/:id', deletePharm);
+pharmRouter.delete('/deletePharm/:id', deletePharm);
 // Dorilarni qidirish
-pharm.get('/searchPharm', searchPharm);
+pharmRouter.get('/searchPharm', searchPharm);
 
-module.exports = pharm;
+module.exports = pharmRouter;

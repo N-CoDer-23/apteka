@@ -17,6 +17,10 @@ const pharmacySchema = new Schema({
         type: String,
         required: true
     },
+    turi: {
+        type: String,
+        required: true
+    },
     Sotiladi: {
         type: String,
         required: true

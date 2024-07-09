@@ -16,14 +16,14 @@ const searchPharm = async (req, res) => {
         if (pharms.length === 0) {
             return res.json({
                 success: false,
-                message: "Qidiruvga mos dorixonalar topilmadi.",
+                message: "Qidiruvga mos Dorilar topilmadi.",
                 innerData: []
             });
         }
 
         res.json({
             success: true,
-            message: "Dorixonalar muvaffaqiyatli topildi!",
+            message: "Dorilar muvaffaqiyatli topildi!",
             innerData: pharms
         });
     } catch (error) {
@@ -31,20 +31,20 @@ const searchPharm = async (req, res) => {
     }
 }
 
-// ---------Dorixonalarni olish----------
+// ---------Dorilarni olish----------
 const getPharm = async (req, res) => {
     try {
         let allpharms = await Product.find();
         if (allpharms.length === 0) {
             return res.json({
                 success: false,
-                message: "Dorixonalar topilmadi!",
+                message: "Dorilar topilmadi!",
                 innerData: allpharms
             });
         }
         res.json({
             success: true,
-            message: "Dorixonalar topildi!",
+            message: "Dorilar topildi!",
             innerData: allpharms
         });
     } catch (error) {
@@ -70,6 +70,7 @@ const createPharm = async (req, res) => {
             Nomi,
             Ishlabchiqarilgan,
             Muddat,
+            turi,
             Olingan,
             Sotiladi,
             Haqida,
@@ -77,7 +78,7 @@ const createPharm = async (req, res) => {
         } = req.body;
 
         // Ma'lumotlar to'liq taqdim etilganini tekshirish
-        if (!Nomi || !Ishlabchiqarilgan || !Muddat || !Olingan || !Sotiladi || !Haqida || !FirmaNomi) {
+        if (!Nomi || !Ishlabchiqarilgan || !Muddat || !turi || !Olingan || !Sotiladi || !Haqida || !FirmaNomi) {
             return res.status(400).json({
                 success: false,
                 message: "Barcha majburiy maydonlarni to'ldiring."
@@ -88,6 +89,7 @@ const createPharm = async (req, res) => {
             Nomi,
             Ishlabchiqarilgan,
             Muddat,
+            turi,
             Olingan,
             Sotiladi,
             Rasm: req.file ? req.file.path : '',
@@ -105,6 +107,7 @@ const createPharm = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 }
+
 
 // ------Dorixonani o'chirish----------
 const deletePharm = async (req, res) => {
