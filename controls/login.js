@@ -1,5 +1,4 @@
 const User = require('../model/UserSchema');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const getUser = async (req, res) => {
@@ -32,30 +31,33 @@ const login = async (req, res) => {
         if (!user) {
             return res.status(401).send({
                 success: false,
-                message: "Username yoki Parol noto'g'ri!"
+                message: "Username or password is incorrect!"
             });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        // Compare passwords using bcrypt.compare
+        const isPasswordValid = await (password, user.password);
+
         if (!isPasswordValid) {
             return res.status(401).send({
                 success: false,
-                message: "Username yoki Parol noto'g'ri!"
+                message: "Username or password is incorrect!"
             });
         }
 
+        // Generate token if login is successful
         const token = generateSimpleToken(user.username);
         return res.status(200).send({
             success: true,
-            message: `Qaytib kelganingizdan xursandmiz, ${username}`,
+            message: `Welcome back, ${username}!`,
             token: token
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("Login error:", error);
         res.status(500).send({
             success: false,
-            message: "Server xatosi"
+            message: "Server error occurred"
         });
     }
 };
@@ -77,17 +79,21 @@ const createUser = async (req, res) => {
             worktime
         } = req.body;
 
+        // Ma'lumotlarni tekshirish
+        if (!fname || !lname || !username || !password || !gender || !salary || !idnumber || !phonenumber || !birthday || !type || !worktime) {
+            return res.status(400).json({ success: false, message: "All fields are required!" });
+        }
+
         const existingUser = await User.findOne({ username });
         if (existingUser) {
             return res.status(400).json({ success: false, message: "Username already exists!" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
             fname,
             lname,
             username,
-            password: hashedPassword,
+            password,
             gender,
             address,
             salary,
