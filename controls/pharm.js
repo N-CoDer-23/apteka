@@ -1,5 +1,21 @@
 const Product = require('../model/pharmacySchema');
+const SoldProduct = require('../model/soldProductSchema');
 const multer = require('multer');
+const path = require('path');
+const WithdrawModel = require('../model/AllManyModel');
+const axios = require('axios'); // axiosni qo'shish
+
+// Rasmni saqlash konfiguratsiyasi
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage });
 
 // ------Qidirish----------
 const searchPharm = async (req, res) => {
@@ -9,14 +25,15 @@ const searchPharm = async (req, res) => {
         const pharms = await Product.find({
             $or: [
                 { Nomi: { $regex: query, $options: 'i' } },
-                { Haqida: { $regex: query, $options: 'i' } }
+                { Haqida: { $regex: query, $options: 'i' } },
+                { BarCode: { $regex: query, $options: 'i' } }
             ]
         });
 
         if (pharms.length === 0) {
             return res.json({
                 success: false,
-                message: "Qidiruvga mos Dorilar topilmadi.",
+                message: "Qidiruvga mos dorilar topilmadi.",
                 innerData: []
             });
         }
@@ -52,62 +69,38 @@ const getPharm = async (req, res) => {
     }
 }
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-});
-
-const upload = multer({ storage: storage });
-
-// ------Dorixona yaratish------------
+// Mahsulot yaratish funksiyasi
 const createPharm = async (req, res) => {
     try {
-        const {
-            Nomi,
-            Ishlabchiqarilgan,
-            Muddat,
-            turi,
-            Olingan,
-            Sotiladi,
-            Haqida,
-            FirmaNomi
-        } = req.body;
+        const { Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date } = req.body;
 
-        // Ma'lumotlar to'liq taqdim etilganini tekshirish
-        if (!Nomi || !Ishlabchiqarilgan || !Muddat || !turi || !Olingan || !Sotiladi || !Haqida || !FirmaNomi) {
-            return res.status(400).json({
-                success: false,
-                message: "Barcha majburiy maydonlarni to'ldiring."
-            });
+        if (!Nomi || !Ishlabchiqarilgan || !Muddat || !turi || !Olingan || !Sotiladi || !Soni || !Donaga || !Dona || !BarCode || !Haqida || !FirmaNomi) {
+            return res.status(400).json({ success: false, message: "Barcha majburiy maydonlarni to'ldiring." });
         }
 
-        const createData = new Product({
-            Nomi,
-            Ishlabchiqarilgan,
-            Muddat,
-            turi,
-            Olingan,
-            Sotiladi,
-            Rasm: req.file ? req.file.path : '',
-            Haqida,
-            FirmaNomi
-        });
+        const createData = new Product({ Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date });
+
+        if (req.file) {
+            createData.Rasm = req.file.path;
+        }
 
         const createdPharm = await createData.save();
-        res.json({
-            success: true,
-            message: "Dorixona muvaffaqiyatli yaratildi!",
-            innerData: createdPharm
-        });
+        res.status(201).json({ success: true, message: "Dorixona muvaffaqiyatli yaratildi!", innerData: createdPharm });
     } catch (error) {
+        console.error('Serverda xatolik:', error);
         res.status(500).json({ success: false, message: error.message });
     }
-}
+};
 
+const checkDuplicate = async (req, res) => {
+    const { BarCode } = req.query;
+    try {
+        const existingProduct = await Product.findOne({ BarCode });
+        res.json({ exists: !!existingProduct });
+    } catch (error) {
+        res.status(500).json({ message: 'Server xatosi' });
+    }
+};
 
 // ------Dorixonani o'chirish----------
 const deletePharm = async (req, res) => {
@@ -142,39 +135,111 @@ const deletePharm = async (req, res) => {
 // ------Dorixonani yangilash----------
 const updatePharm = async (req, res) => {
     try {
-        let { id } = req.params;
-        let body = req.body;
+        const { id } = req.params;
+        const updateData = req.body;
 
-        if (!id) {
-            return res.status(400).json({
+        // Product modelida yangilanishdan oldin validatsiya
+        if (!id || !updateData) {
+            return res.status(400).json({ success: false, message: 'Iltimos, barcha ma\'lumotlarni to\'ldiring!' });
+        }
+
+        // Mahsulotni yangilash
+        const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
+
+        // Mahsulot mavjudligini tekshirish
+        if (!updatedProduct) {
+            return res.status(404).json({ success: false, message: 'Mahsulot topilmadi!' });
+        }
+
+        res.status(200).json({ success: true, message: 'Mahsulot yangilandi!', data: updatedProduct });
+    } catch (error) {
+        console.error('Mahsulotni yangilashda xatolik:', error);
+        res.status(500).json({ success: false, message: 'Serverda xatolik yuz berdi!' });
+    }
+};
+
+const getAllMany = async (req, res) => {
+    try {
+        const allMany = await WithdrawModel.find();
+
+        if (allMany.length === 0) {
+            return res.json({
                 success: false,
-                message: "ID taqdim etilmagan."
+                message: "Hech qanday ma'lumot topilmadi.",
+                innerData: []
             });
         }
 
-        let updated = await Product.findByIdAndUpdate(id, body, { new: true });
-        if (!updated) {
-            return res.status(404).json({
-                success: false,
-                message: "Dorixona yangilanmadi!",
-                innerData: updated
-            });
-        }
         res.json({
             success: true,
-            message: "Dorixona muvaffaqiyatli yangilandi!",
-            innerData: updated
+            message: "Ma'lumotlar muvaffaqiyatli topildi!",
+            innerData: allMany
         });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error('Ma\'lumotlarni olishda xatolik:', error);
+        res.status(500).json({ success: false, message: 'Serverda xatolik yuz berdi!' });
     }
-}
+};
+
+const updateAllMany = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+
+        const updatedAllMany = await WithdrawModel.findByIdAndUpdate(id, updateData, { new: true });
+
+        if (!updatedAllMany) {
+            return res.status(404).json({ success: false, message: 'Ma\'lumot topilmadi!' });
+        }
+
+        res.status(200).json({ success: true, message: 'Ma\'lumot yangilandi!', data: updatedAllMany });
+    } catch (error) {
+        console.error('Ma\'lumotni yangilashda xatolik:', error);
+        res.status(500).json({ success: false, message: 'Serverda xatolik yuz berdi!' });
+    }
+};
+
+const createAllMany = async (req, res) => {
+    try {
+        const { ism, sabab, pulMiqdor, date } = req.body;
+
+        const newAllMany = new WithdrawModel({ ism, sabab, pulMiqdor, date });
+        const createdAllMany = await newAllMany.save();
+
+        res.status(201).json({ success: true, message: 'Yangi ma\'lumot muvaffaqiyatli yaratildi!', data: createdAllMany });
+    } catch (error) {
+        console.error('Ma\'lumot yaratishda xatolik:', error);
+        res.status(500).json({ success: false, message: 'Serverda xatolik yuz berdi!' });
+    }
+};
+
+const deleteAllMany = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedAllMany = await WithdrawModel.findByIdAndDelete(id);
+
+        if (!deletedAllMany) {
+            return res.status(404).json({ success: false, message: 'Ma\'lumot topilmadi!' });
+        }
+
+        res.json({ success: true, message: 'Ma\'lumot muvaffaqiyatli o‘chirildi!' });
+    } catch (error) {
+        console.error('Ma\'lumotni o\'chirishda xatolik:', error);
+        res.status(500).json({ success: false, message: 'Serverda xatolik yuz berdi!' });
+    }
+};
 
 module.exports = {
-    updatePharm,
+    searchPharm,
     getPharm,
     createPharm,
     deletePharm,
-    searchPharm,
+    updatePharm,
     upload,
-}
+    checkDuplicate,
+    createAllMany,
+    updateAllMany,
+    getAllMany,
+    deleteAllMany
+};

@@ -1,24 +1,43 @@
-const { Router } = require('express');
+const express = require('express');
+const router = express.Router();
 const {
+    searchPharm,
     getPharm,
     createPharm,
-    updatePharm,
     deletePharm,
-    searchPharm,
-    upload
+    updatePharm,
+    upload,
+    checkDuplicate,
+    createAllMany,
+    updateAllMany,
+    getAllMany,
+    deleteAllMany
 } = require('../controls/pharm');
 
-const pharmRouter = Router();
-
 // Ma'lumotlarni ko'rish
-pharmRouter.get('/getPharm', getPharm);
+router.get('/getPharm', getPharm);
 // Yangi dori qo'shish
-pharmRouter.post('/createPharm', upload.single("image"), createPharm);
+router.post('/createPharm', upload.single('image'), createPharm);
 // Dorilarni ID'siga qarab yangilash
-pharmRouter.put('/updatePharm/:id', updatePharm);
+router.put('/updatePharm/:id', updatePharm);
 // Dorilarni ID'siga qarab o'chirish
-pharmRouter.delete('/deletePharm/:id', deletePharm);
+router.delete('/deletePharm/:id', deletePharm);
 // Dorilarni qidirish
-pharmRouter.get('/searchPharm', searchPharm);
+router.get('/searchPharm', searchPharm);
+// Dublikatlarni tekshirish
+router.get('/checkDuplicate', checkDuplicate);
 
-module.exports = pharmRouter;
+// Pul olish
+// Ma'lumotlarni olish
+router.get('/getAllMany', getAllMany);
+
+// Ma'lumotni yaratish
+router.post('/createAllMany', createAllMany);
+
+// Ma'lumotni yangilash
+router.put('/updateAllMany/:id', updateAllMany);
+
+// Ma'lumotni o'chirish
+router.delete('/deleteAllMany/:id', deleteAllMany);
+
+module.exports = router;

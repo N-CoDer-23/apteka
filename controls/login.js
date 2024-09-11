@@ -1,6 +1,7 @@
 const User = require('../model/UserSchema');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+require('dotenv').config(); // .env fayldan ma'lumotlarni olish
 
 // Barcha foydalanuvchilarni olish uchun funksiya
 const getUser = async (req, res) => {
@@ -21,43 +22,48 @@ const getUser = async (req, res) => {
     }
 };
 
-// Token yaratish uchun oddiy funksiya
-const generateSimpleToken = (username) => {
-    return `${username}-${Date.now()}`;
-};
-
 // Login qilish uchun funksiya
-// Login controller
 const login = async (req, res) => {
     try {
-        const { username, password } = req.body;
-        const user = await User.findOne({ username });
-
-        if (!user || user.password !== password) {
-            return res.status(401).send({
-                success: false,
-                message: "Foydalanuvchi nomi yoki paroli noto'g'ri!"
-            });
-        }
-
-        const token = jwt.sign({ username: user.username, userType: user.type }, 'your_jwt_secret_key', { expiresIn: '1h' });
-
-        return res.status(200).send({
-            success: true,
-            message: `Xush kelibsiz, ${username}!`,
-            token: token,
-            userType: user.type
+      const { username, password } = req.body;
+      console.log("Received login request for username:", username);
+  
+      const user = await User.findOne({ username });
+      if (!user) {
+        console.log("User not found:", username);
+        return res.status(401).send({
+          success: false,
+          message: "Foydalanuvchi nomi yoki paroli noto'g'ri!"
         });
-
+      }
+  
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        console.log("Password does not match for username:", username);
+        return res.status(401).send({
+          success: false,
+          message: "Foydalanuvchi nomi yoki paroli noto'g'ri!"
+        });
+      }
+  
+      const token = jwt.sign({ username: user.username, userType: user.type }, 'your_jwt_secret_key', { expiresIn: '1h' });
+  
+      return res.status(200).send({
+        success: true,
+        message: `Xush kelibsiz, ${username}!`,
+        token: token,
+        userType: user.type
+      });
+  
     } catch (error) {
-        console.error("Login xatosi:", error);
-        res.status(500).send({
-            success: false,
-            message: "Server xatosi yuz berdi"
-        });
+      console.error("Login xatosi:", error);
+      res.status(500).send({
+        success: false,
+        message: "Server xatosi yuz berdi"
+      });
     }
-};
-
+  };
+  
 
 
 // Yangi foydalanuvchi yaratish
@@ -75,11 +81,12 @@ const createUser = async (req, res) => {
             phonenumber,
             birthday,
             type,
-            worktime
+            worktime,
+            atname
         } = req.body;
 
         // Ma'lumotlarni tekshirish
-        if (!fname || !lname || !username || !password || !gender || !address || !salary || !idnumber || !phonenumber || !birthday || !type || !worktime) {
+        if (!fname || !lname || !username || !password || !gender || !address || !idnumber || !phonenumber || !birthday || !type || (!salary && type !== 'direktor') || (!worktime && type !== 'direktor') || (!atname && type === 'direktor')) {
             return res.status(400).json({ success: false, message: "Barcha maydonlarni to'ldiring!" });
         }
 
@@ -88,19 +95,22 @@ const createUser = async (req, res) => {
             return res.status(400).json({ success: false, message: "Foydalanuvchi nomi allaqachon mavjud!" });
         }
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const newUser = new User({
             fname,
             lname,
             username,
-            password,
+            password: hashedPassword,
             gender,
             address,
-            salary,
+            salary: type !== 'direktor' ? salary : undefined,
             idnumber,
             phonenumber,
             birthday,
             type,
-            worktime
+            worktime: type !== 'direktor' ? worktime : undefined,
+            atname: type === 'direktor' ? atname : undefined
         });
 
         await newUser.save();
@@ -162,11 +172,30 @@ const updateUser = async (req, res) => {
         res.status(500).send({ success: false, message: error.message });
     }
 };
+// Dorixona nomini olish uchun funksiya
+const getPharmacyName = async (req, res) => {
+    try {
+        // Foydalanuvchi yoki dorixona ma'lumotlarini olish uchun moslash
+        const pharmacyName = "Dorixona Nomi"; // Bu yerda dorixona nomini olish uchun real kodni yozing
+        res.json({
+            success: true,
+            pharmacyName: pharmacyName
+        });
+    } catch (error) {
+        console.error("Dorixona nomini olishda xatolik:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server xatosi"
+        });
+    }
+};
+
 
 module.exports = {
     getUser,
     login,
     createUser,
     deleteUser,
-    updateUser
+    updateUser,
+    getPharmacyName
 };
