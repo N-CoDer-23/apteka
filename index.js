@@ -28,11 +28,16 @@ const usersRouter = require('./routes/user');
 const pharmRouter = require('./routes/pharm');
 const manyRouter = require('./routes/allmany');
 const soldRouter = require('./routes/sellProducts');
+const qaytaManyRouter = require('./routes/qayta');
+
+
 
 app.use('/users', usersRouter);
 app.use('/pharm', pharmRouter);
 app.use('/many', manyRouter);
 app.use('/sel', soldRouter);
+// Routerlarni qo'shish
+app.use('/qaytaMany', qaytaManyRouter);
 
 const PORT = process.env.PORT || 7000;
 app.listen(PORT, () => {

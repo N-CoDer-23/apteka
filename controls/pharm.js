@@ -72,20 +72,24 @@ const getPharm = async (req, res) => {
 // Mahsulot yaratish funksiyasi
 const createPharm = async (req, res) => {
     try {
-        const { Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date } = req.body;
+        const { Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date, 
+            
+         } = req.body;
 
         if (!Nomi || !Ishlabchiqarilgan || !Muddat || !turi || !Olingan || !Sotiladi || !Soni || !Donaga || !Dona || !BarCode || !Haqida || !FirmaNomi) {
             return res.status(400).json({ success: false, message: "Barcha majburiy maydonlarni to'ldiring." });
         }
 
-        const createData = new Product({ Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date });
+        const createData = new Product({ Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date, 
+            
+         });
 
         if (req.file) {
             createData.Rasm = req.file.path;
         }
 
         const createdPharm = await createData.save();
-        res.status(201).json({ success: true, message: "Dorixona muvaffaqiyatli yaratildi!", innerData: createdPharm });
+        res.status(201).json({ success: true, message: "Dori muvaffaqiyatli qo'shildi!", innerData: createdPharm });
     } catch (error) {
         console.error('Serverda xatolik:', error);
         res.status(500).json({ success: false, message: error.message });

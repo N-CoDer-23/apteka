@@ -17,6 +17,7 @@ const pharmacySchema = new Schema({
     Activ: { type: Number },
     Activdona: { type: Number },
     saleDate: { type: Date, default: Date.now },
+    
 
 });
 
