@@ -63,6 +63,27 @@ const login = async (req, res) => {
       });
     }
   };
+
+  // Backend - users.controller.js
+
+const getUserCount = async (req, res) => {
+    try {
+        const directorCount = await User.countDocuments({ type: 'direktor' });
+        const employeeCount = await User.countDocuments({ type: 'hodim' });
+        
+        res.status(200).json({
+            success: true,
+            directorCount,
+            employeeCount
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Foydalanuvchi sonini olishda xatolik!"
+        });
+    }
+};
+
   
 
 
@@ -194,6 +215,7 @@ const getPharmacyName = async (req, res) => {
 module.exports = {
     getUser,
     login,
+    getUserCount,
     createUser,
     deleteUser,
     updateUser,

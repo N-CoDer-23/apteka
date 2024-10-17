@@ -13,6 +13,7 @@ const pharmacySchema = new Schema({
     Rasm: { type: String },
     Haqida: { type: String, required: true },
     FirmaNomi: { type: String, required: true },
+    FindQuti: { type: String, required: true },
     BarCode: { type: String, required: true },
     Activ: { type: Number },
     Activdona: { type: Number },

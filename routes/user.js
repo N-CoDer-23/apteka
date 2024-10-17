@@ -1,9 +1,10 @@
 const { Router } = require('express');
-const { getUser, login, createUser, getPharmacyName, updateUser, deleteUser } = require('../controls/login');
+const { getUser, login, getUserCount, createUser, getPharmacyName, updateUser, deleteUser } = require('../controls/login');
 
 const usersRouter = Router();
 
 usersRouter.get('/getUser', getUser);
+usersRouter.get('/Count', getUserCount);
 usersRouter.post('/login', login); // Corrected path
 usersRouter.post('/createUser', createUser);
 usersRouter.put('/updateUser/:id', updateUser);

@@ -72,15 +72,15 @@ const getPharm = async (req, res) => {
 // Mahsulot yaratish funksiyasi
 const createPharm = async (req, res) => {
     try {
-        const { Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date, 
+        const { Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, FindQuti, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date, 
             
          } = req.body;
 
-        if (!Nomi || !Ishlabchiqarilgan || !Muddat || !turi || !Olingan || !Sotiladi || !Soni || !Donaga || !Dona || !BarCode || !Haqida || !FirmaNomi) {
+        if (!Nomi || !Ishlabchiqarilgan || !Muddat || !turi || !Olingan || !Sotiladi || !FindQuti|| !Soni || !Donaga || !Dona || !BarCode || !Haqida || !FirmaNomi) {
             return res.status(400).json({ success: false, message: "Barcha majburiy maydonlarni to'ldiring." });
         }
 
-        const createData = new Product({ Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date, 
+        const createData = new Product({ Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, FindQuti, Sotiladi, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date, 
             
          });
 
