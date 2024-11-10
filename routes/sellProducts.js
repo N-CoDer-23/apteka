@@ -1,4 +1,3 @@
-// routes/soldProducts.js
 const express = require('express');
 const router = express.Router();
 const {
@@ -6,18 +5,19 @@ const {
   getSoldProducts,
   updateSoldProduct,
   deleteSoldProduct,
-} = require('../controls/sellProducts');
+} = require('../controllers/sellProducts');
+const authMiddleware = require('../controllers/auth.middleware');
 
 // Yaratish
-router.post('/createsell', createSoldProduct);
+router.post('/createsell', authMiddleware, createSoldProduct);
 
 // O'qish
-router.get('/getsell', getSoldProducts);
+router.get('/getsell/:pharmacyId', authMiddleware, getSoldProducts);
 
 // Yangilash
-router.put('/updatesell/:id', updateSoldProduct);
+router.put('/updatesell/:id', authMiddleware, updateSoldProduct);
 
 // O'chirish
-router.delete('/deletesell/:id', deleteSoldProduct);
+router.delete('/deletesell/:id', authMiddleware, deleteSoldProduct);
 
 module.exports = router;

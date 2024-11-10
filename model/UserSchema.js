@@ -15,8 +15,10 @@ const userSchema = new Schema({
     birthday: { type: Date, required: true },
     type: { type: String, required: true }, // 'hodim' yoki 'director'
     worktime: { type: String },
-    maow: { type: String},
-    atname: { type: String}
+    maow: { type: String },
+    // atname: { type: String },
+    pharmacyId: { type: Schema.Types.ObjectId, ref: 'Pharmacy' } // Dorixona ID si
 });
+
 const User = model('User', userSchema);
 module.exports = User;

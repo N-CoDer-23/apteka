@@ -6,6 +6,7 @@ const allManySchema = new Schema({
     sabab: { type: String, required: true },
     pulMiqdor: { type: Number, required: true },
     date: { type: Date, default: Date.now },
+    pharmacyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Pharmacy', required: true } // Dorixona ID
 });
 
 const AllManyModel = mongoose.model('AllMany', allManySchema);

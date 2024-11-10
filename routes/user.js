@@ -1,15 +1,38 @@
-const { Router } = require('express');
-const { getUser, login, getUserCount, createUser, getPharmacyName, updateUser, deleteUser } = require('../controls/login');
+// const { Router } = require('express');
+// const { createUser, getUsers, getUserById, updateUser, deleteUser } = require('../controllers/login');
 
-const usersRouter = Router();
+// const usersRouter = Router();
 
-usersRouter.get('/getUser', getUser);
-usersRouter.get('/Count', getUserCount);
-usersRouter.post('/login', login); // Corrected path
-usersRouter.post('/createUser', createUser);
-usersRouter.put('/updateUser/:id', updateUser);
-usersRouter.delete('/deleteUser/:id', deleteUser);
+const express = require('express');
+const router = express.Router();
+const { createUser, getUsers, getUserById, updateUser, deleteUser, login } = require('../controllers/login');
+const authMiddleware = require('../controllers/auth.middleware');
 
-usersRouter.get('/getPharm', getPharmacyName);
+// Foydalanuvchi yaratish
+router.post('/createUser', authMiddleware, createUser);
 
-module.exports = usersRouter;
+// Foydalanuvchilarni olish
+router.get('/getUser', authMiddleware, getUsers);
+
+// Bitta foydalanuvchini olish
+router.get('/getUserId/:id', authMiddleware, getUserById);
+
+// Foydalanuvchini yangilash
+router.put('/updateUser/:id', authMiddleware, updateUser);
+
+// Foydalanuvchini o'chirish
+router.delete('/deleteUser/:id', authMiddleware, deleteUser);
+
+router.post('/login', login); // Corrected path
+
+module.exports = router;
+
+
+// usersRouter.get('/getUser', getUser);
+// usersRouter.post('/login', login); // Corrected path
+// usersRouter.post('/createUser', createUser);
+// usersRouter.put('/updateUser/:id', updateUser);
+// usersRouter.delete('/deleteUser/:id', deleteUser);
+
+// usersRouter.get('/getPharm', getPharmacyName);
+

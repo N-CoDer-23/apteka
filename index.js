@@ -1,7 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config();
+
+require('dotenv').config();
+
 
 const app = express();
 app.use(express.json());
@@ -29,6 +31,7 @@ const pharmRouter = require('./routes/pharm');
 const manyRouter = require('./routes/allmany');
 const soldRouter = require('./routes/sellProducts');
 const qaytaManyRouter = require('./routes/qayta');
+const newPharmacy = require('./routes/newPharm');
 
 
 
@@ -36,6 +39,7 @@ app.use('/users', usersRouter);
 app.use('/pharm', pharmRouter);
 app.use('/many', manyRouter);
 app.use('/sel', soldRouter);
+app.use('/newPharms', newPharmacy);
 // Routerlarni qo'shish
 app.use('/qaytaMany', qaytaManyRouter);
 
