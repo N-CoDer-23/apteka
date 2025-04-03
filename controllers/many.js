@@ -14,9 +14,9 @@ const getMany = async (req, res) => {
     try {
         const { pharmacyId } = req.params; // URL orqali dorixona IDsi keladi
 
-        console.log("Ma'lumotlarni olish boshlandi...");
+        // console.log("Ma'lumotlarni olish boshlandi...");
         const amount = await AlMany.find({ pharmacyId }); // Faqat tegishli dorixonaga oid ma'lumotlarni olish
-        console.log("Olingan ma'lumotlar:", amount);
+        // console.log("Olingan ma'lumotlar:", amount);
 
         if (!amount || amount.length === 0) {
             return res.status(404).json({ success: false, message: "Ma'lumot topilmadi." });
@@ -39,7 +39,7 @@ const createMany = async (req, res) => {
         }
 
         const newAlMany = new AlMany({ pharmacyId, amount });
-        console.log("Yangi ma'lumot:", newAlMany);
+        // console.log("Yangi ma'lumot:", newAlMany);
         const savedAlMany = await newAlMany.save();
             
         res.status(201).json({ success: true, message: "Ma'lumot muvaffaqiyatli yaratildi!", innerData: savedAlMany });

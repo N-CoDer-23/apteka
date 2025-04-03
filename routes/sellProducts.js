@@ -5,11 +5,13 @@ const {
   getSoldProducts,
   updateSoldProduct,
   deleteSoldProduct,
+  // createCard,
 } = require('../controllers/sellProducts');
 const authMiddleware = require('../controllers/auth.middleware');
 
 // Yaratish
 router.post('/createsell', authMiddleware, createSoldProduct);
+// router.post('/createCard', authMiddleware, createCard);
 
 // O'qish
 router.get('/getsell/:pharmacyId', authMiddleware, getSoldProducts);

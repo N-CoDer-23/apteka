@@ -6,6 +6,7 @@ const pharmacySchema = new Schema({
     Muddat: { type: String, required: true },
     Olingan: { type: String, required: true },
     turi: { type: String, required: true },
+    Davlat: { type: String, required: true },
     Sotiladi: { type: String, required: true },
     Soni: { type: String },
     Donaga: { type: Number },

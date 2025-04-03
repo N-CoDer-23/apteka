@@ -8,10 +8,11 @@ const SoldProductSchema = new Schema({
   Activ: Number,
   Donaga: Number,
   Activdona: Number,
+  Card: Number,
   saleDate: { type: Date, default: Date.now }
 });
 
 
 const SoldProduct = model('SoldProduct', SoldProductSchema);
 
-module.exports = SoldProduct;
+module.exports = SoldProduct; 

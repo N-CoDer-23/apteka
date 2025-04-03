@@ -17,6 +17,7 @@ const createSoldProduct = async (req, res) => {
             Activ: product.Activ,
             Donaga: product.Donaga,
             Activdona: product.Activdona,
+            Card: product.Card,
             saleDate: new Date(product.saleDate),
         }));
 
@@ -28,6 +29,29 @@ const createSoldProduct = async (req, res) => {
         res.status(500).json({ success: false, message: 'Serverda xatolik yuz berdi!' });
     }
 };
+// const createCard = async (req, res) => {
+//     try {
+//         const { products, pharmacyId } = req.body;
+
+//         if (!products || products.length === 0) {
+//             return res.status(400).json({ success: false, message: "Mahsulotlar yo'q!" });
+//         }
+
+//         const saleEntries = products.map(product => ({
+//             productId: product._id,
+//             pharmacyId,
+//             Card: product.Card,
+//             saleDate: new Date(product.saleDate),
+//         }));
+
+//         // Ma'lumotlarni bazaga saqlash
+//         const savedEntries = await SoldProduct.insertMany(saleEntries);
+//         res.status(200).json({ success: true, message: 'Mahsulotlar sotildi!', data: savedEntries });
+//     } catch (error) {
+//         console.error('Mahsulotlarni sotishda xatolik:', error);
+//         res.status(500).json({ success: false, message: 'Serverda xatolik yuz berdi!' });
+//     }
+// };
 
 
 // Mahsulotlarni olish
@@ -89,4 +113,5 @@ module.exports = {
     getSoldProducts,
     updateSoldProduct,
     deleteSoldProduct,
+    // createCard
 };

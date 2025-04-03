@@ -75,11 +75,11 @@ const createPharm = async (req, res) => {
     const { pharmacyId } = req.user; // Foydalanuvchi ma'lumotlaridan pharmacyId olish
 
     const {
-        Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, FindQuti, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date
+        Nomi, Ishlabchiqarilgan, Muddat, turi, Davlat, Olingan, Sotiladi, Soni, Donaga, Dona, FindQuti, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date
     } = req.body;
 
     // Barcha majburiy maydonlarni tekshirish
-    const requiredFields = [Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, FindQuti, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi];
+    const requiredFields = [Nomi, Ishlabchiqarilgan, Muddat, turi, Davlat, Olingan, Sotiladi, FindQuti, Soni, Donaga, Dona, BarCode, Haqida, FirmaNomi];
     if (requiredFields.some(field => !field)) {
         return res.status(400).json({ success: false, message: "Barcha majburiy maydonlarni to'ldiring." });
     }
@@ -88,7 +88,7 @@ const createPharm = async (req, res) => {
         // Yangi Product yaratish
         const createData = new Product({
             pharmacyId, // pharmacyId'ni saqlash
-            Nomi, Ishlabchiqarilgan, Muddat, turi, Olingan, Sotiladi, Soni, Donaga, Dona, FindQuti, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date,
+            Nomi, Ishlabchiqarilgan, Muddat, turi, Davlat, Olingan, Sotiladi, Soni, Donaga, Dona, FindQuti, BarCode, Haqida, FirmaNomi, pulMiqdor, sabab, date,
         });
 
         // Agar rasm yuklangan bo'lsa, yo'lini saqlash
